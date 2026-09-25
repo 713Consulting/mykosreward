@@ -96,9 +96,15 @@ it up instead:
 
 1. Go to <https://admin.google.com> and sign in as the Workspace admin.
 2. Open **Menu → Apps → Google Workspace → Sites**.
-3. Open **Custom URLs** (called **Web address mapping** in older versions of the
-   console) → **Add**.
-4. Choose the site, enter `www` as the address, pick `mykosreward.com`, and save.
+3. Open **Custom URL**. It lists your mappings, and there are none yet.
+4. Click the **+** at the top right of that list. Fill in:
+   - **Custom URL:** `www.mykosreward.com`
+   - **Google Sites URL:** the site's *published* address, e.g.
+     `https://sites.google.com/mykosreward.com/<site-name>/`. To get it, open
+     the Sites editor, click the link icon next to the gear, and copy the
+     published-site link. The site must be published and owned by a
+     `@mykosreward.com` account.
+5. Save. The status shows as pending until the `www` CNAME record works.
 
 ## Step 5 — Point the domain at Google Sites
 
