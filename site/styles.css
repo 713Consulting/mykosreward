@@ -23,8 +23,9 @@
   --purple: #b86bff;
   --cyan: #29e6e6;
   --radius: 18px;
-  /* Moving mural behind the top bar and footer. Swap in assets/mural.gif when it's added. */
-  --mural: url("assets/hallway.webp");
+  /* Still frame of the mural; shown until the video plays, and instead of it
+     for visitors who have reduced motion turned on. */
+  --mural: url("assets/mural-poster.webp");
   --maxw: 1160px;
   --display: "Cinzel Decorative", Georgia, serif;
   --condensed: "Oswald", "Arial Narrow", sans-serif;
@@ -93,7 +94,7 @@ em { color: var(--green); font-style: italic; }
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 10px 16px;
-  background: linear-gradient(rgba(7,6,11,.35), rgba(7,6,11,.35)), var(--mural) center / cover no-repeat, #07060b;
+  background: var(--mural) center / cover no-repeat, #07060b;
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
 .brand { text-decoration: none; }
@@ -123,7 +124,7 @@ em { color: var(--green); font-style: italic; }
   background:
     radial-gradient(ellipse at 70% 40%, rgba(7,6,11,.35), rgba(7,6,11,.92) 70%),
     linear-gradient(180deg, rgba(7,6,11,.55), var(--bg) 96%),
-    url("assets/hallway.webp") center / cover no-repeat;
+    url("assets/mural-poster.webp") center / cover no-repeat;
   filter: saturate(1.2);
 }
 .hero-grid { display: grid; gap: 40px; align-items: center; }
@@ -236,8 +237,14 @@ em { color: var(--green); font-style: italic; }
 .tagline { margin-top: 2em; font: 500 .9rem/1 var(--condensed); letter-spacing: .4em; text-transform: uppercase; color: var(--muted); }
 
 /* Footer */
-.footer { padding: 48px 0; background: linear-gradient(rgba(4,3,6,.35), rgba(4,3,6,.35)), var(--mural) center / cover no-repeat, #040306; color: var(--ink); font-size: .95rem; text-align: center; }
+.footer { padding: 48px 0; background: var(--mural) center / cover no-repeat, #040306; color: var(--ink); font-size: .95rem; text-align: center; }
 /* Readable over the busy mural: text sits on dark frosted panels. */
+/* Moving mural (assets/mural.mp4) filling the top bar and footer, under a light scrim. */
+.topbar, .footer { overflow: hidden; isolation: isolate; }
+.footer { position: relative; }
+.mural-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; pointer-events: none; }
+.topbar::before, .footer::before { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(7,6,11,.35); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .mural-video { display: none; } }
 .mural-panel { background: rgba(4,3,8,.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 6px 24px rgba(0,0,0,.55); }
 .topbar .brand.mural-panel { padding: 6px 12px; border-radius: 12px; }
 .topbar .btn-small { box-shadow: 0 0 0 2px #000, 0 6px 18px rgba(0,0,0,.7); }

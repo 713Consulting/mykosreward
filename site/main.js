@@ -46,6 +46,11 @@
     }
   });
 
+  // Keep the mural still for visitors who asked for reduced motion.
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.querySelectorAll(".mural-video").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
+  }
+
   var year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
 
