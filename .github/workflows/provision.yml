@@ -1,0 +1,34 @@
+name: Set up AWS for the site
+
+# Run by hand from the Actions tab (safe to run again). Creates the S3 bucket,
+# CloudFront distribution and HTTPS certificate, and attaches
+# www.mykosreward.com once the certificate is issued. The run summary lists any
+# DNS records to add in Squarespace.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check AWS keys
+        env:
+          HAS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' }}
+        run: |
+          if [ "$HAS_KEY" != "true" ]; then
+            echo "::error::Add the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY repository secrets first."
+            exit 1
+          fi
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Create or update AWS resources
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: scripts/provision-aws.sh

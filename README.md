@@ -26,25 +26,16 @@ npx serve site
 
 ## Deploy to AWS
 
-`.github/workflows/deploy.yml` uploads `site/` to an S3 bucket and clears the CloudFront cache on every push to `main` that changes `site/`. You can also run it by hand from the **Actions** tab. It needs these settings under **Settings → Secrets and variables → Actions**:
+Two GitHub Actions workflows do everything; nothing needs to be installed locally.
 
-| Kind | Name | Value |
-|---|---|---|
-| Variable | `S3_BUCKET` | bucket name, e.g. `www.mykosreward.com` |
-| Variable | `AWS_REGION` | optional, defaults to `us-east-1` |
-| Variable | `CLOUDFRONT_DISTRIBUTION_ID` | optional; if set, the cache is cleared after upload |
-| Secret | `AWS_ROLE_ARN` | IAM role for GitHub OIDC login (recommended) |
-| Secret | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | use instead of the role if you don't have OIDC set up |
+**One-time setup**
 
-The IAM identity needs `s3:ListBucket`, `s3:PutObject`, `s3:DeleteObject` on the bucket and `cloudfront:CreateInvalidation` on the distribution.
+1. In AWS, create an IAM user for deploys (IAM → Users → Create user, e.g. `mykosreward-deploy`) and attach the policies `AmazonS3FullAccess`, `CloudFrontFullAccess` and `AWSCertificateManagerFullAccess`. Create an access key for it (Security credentials → Create access key → "Application running outside AWS").
+2. In GitHub → Settings → Secrets and variables → Actions → **New repository secret**, add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` from that key.
+3. Actions → **Set up AWS for the site** → Run workflow. It creates a private S3 bucket, a CloudFront distribution and an HTTPS certificate request (`scripts/provision-aws.sh`). The run summary lists two DNS records to add in Squarespace (Domains → mykosreward.com → DNS → Custom records): the certificate check CNAME and `www` → the CloudFront address.
+4. When the certificate is issued (usually 5–30 minutes after the records are in), run **Set up AWS for the site** again. It attaches www.mykosreward.com to CloudFront.
+5. For the bare domain, add a Squarespace forwarding rule (Domain Forwarding → Manage rules): `mykosreward.com` → `https://www.mykosreward.com`, permanent (301). Keep the four A records and the MX/TXT email records.
 
-Typical AWS setup: a private S3 bucket behind a CloudFront distribution, with `index.html` as the default root object, alternate domain names `www.mykosreward.com` and `mykosreward.com`, and an ACM certificate (in `us-east-1`) covering both.
+**Every update**
 
-## Point the domain at AWS (Squarespace Domains)
-
-In Squarespace → Domains → mykosreward.com → DNS:
-
-1. **Custom records → Add record:** `CNAME`, name `www`, data = the CloudFront domain (`dxxxxxxxx.cloudfront.net`).
-2. **ACM validation:** add the CNAME records the certificate request gives you.
-3. **Bare domain:** in **Squarespace Domain Forwarding → Manage rules**, forward `mykosreward.com` to `https://www.mykosreward.com` (301). Keep the four A records; the forwarding uses them.
-4. **Leave the MX and TXT records alone.** They run Google Workspace email.
+**Deploy site to AWS** runs on every push that changes `site/` (or by hand from the Actions tab). It uploads `site/` to the bucket and refreshes CloudFront. It finds the bucket and distribution on its own; the optional repository variables `S3_BUCKET`, `CLOUDFRONT_DISTRIBUTION_ID` and `AWS_REGION` override that. An `AWS_ROLE_ARN` secret (GitHub OIDC) can be used instead of access keys.
