@@ -27,6 +27,25 @@
     }
   }
 
+  // No single word alone on the last line of a paragraph: tie the last two
+  // words together. (CSS text-wrap: pretty does this too where supported.)
+  document.querySelectorAll("main p:not(.one-line), main h3, main blockquote").forEach(function (el) {
+    if (el.textContent.trim().split(/\s+/).length < 3) return; // two words may still need to wrap
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    var seenWord = false;
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      var t = nodes[i].nodeValue;
+      for (var k = t.length - 1; k >= 0; k--) {
+        if (/\s/.test(t[k])) {
+          if (seenWord) { nodes[i].nodeValue = t.slice(0, k) + "\u00a0" + t.slice(k + 1); return; }
+        } else {
+          seenWord = true;
+        }
+      }
+    }
+  });
+
   var year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
 
