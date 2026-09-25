@@ -14,6 +14,32 @@ releases it.
 
 ---
 
+## Your actual setup (Squarespace Domains, checked from a screenshot)
+
+The DNS for `mykosreward.com` is on **Squarespace Domains** and does **not**
+have the usual Blogger records. There is no `www` CNAME and no
+`gv-….dv.googlehosted.com` record. The blog is most likely reached through a
+**Squarespace Domain Forwarding** rule. That rule is served by the four
+`198.185.159.x` / `198.49.23.x` A records.
+
+What to do in Squarespace (Domains → mykosreward.com → DNS):
+
+1. **Squarespace Domain Forwarding → MANAGE RULES.** Change the rule that points
+   to the blog (a `*.blogspot.com` or Blogger address) so that it forwards
+   `mykosreward.com` to `https://www.mykosreward.com` instead. Use a permanent
+   (301) redirect. Delete any rule for the `www` subdomain.
+   **Do not delete the four A records.** They are what make the forward work.
+2. **Custom records → ADD RECORD:** Type `CNAME`, Name `www`, Data
+   `ghs.googlehosted.com`.
+3. **Leave the MX and TXT records alone.** They run the Google Workspace email,
+   and the `google-site-verification` TXT probably already verifies the domain,
+   so Step 3 below may be done already.
+
+Then still check Blogger (Step 1) and connect the domain in Google Sites
+(Step 4). You can skip Steps 2 and 5 below; the list above replaces them.
+
+---
+
 ## Step 1 — Disconnect the domain from Blogger
 
 1. Go to <https://www.blogger.com> and sign in with the account that owns the blog.
