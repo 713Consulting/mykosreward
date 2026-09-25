@@ -18,16 +18,18 @@ releases it.
 
 The DNS for `mykosreward.com` is on **Squarespace Domains** and does **not**
 have the usual Blogger records. There is no `www` CNAME and no
-`gv-….dv.googlehosted.com` record. The blog is most likely reached through a
-**Squarespace Domain Forwarding** rule. That rule is served by the four
-`198.185.159.x` / `198.49.23.x` A records.
+`gv-….dv.googlehosted.com` record. There are no forwarding rules either, so this DNS
+does not send anyone to Blogger. The only remaining link is the custom-domain
+setting inside Blogger. If the blog still loads at www.mykosreward.com, check
+**Overview → Nameservers** in Squarespace. They should be Squarespace's own
+nameservers. If they point somewhere else, the DNS records that are actually in
+use are managed there.
 
 What to do in Squarespace (Domains → mykosreward.com → DNS):
 
-1. **Squarespace Domain Forwarding → MANAGE RULES.** Change the rule that points
-   to the blog (a `*.blogspot.com` or Blogger address) so that it forwards
-   `mykosreward.com` to `https://www.mykosreward.com` instead. Use a permanent
-   (301) redirect. Delete any rule for the `www` subdomain.
+1. **Squarespace Domain Forwarding → MANAGE RULES.** There are currently no
+   rules. Add one that forwards `mykosreward.com` to `https://www.mykosreward.com`
+   with a permanent (301) redirect, so the address without `www` also works.
    **Do not delete the four A records.** They are what make the forward work.
 2. **Custom records → ADD RECORD:** Type `CNAME`, Name `www`, Data
    `ghs.googlehosted.com`.
