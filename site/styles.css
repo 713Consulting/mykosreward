@@ -138,9 +138,12 @@ em { color: var(--green); font-style: italic; }
 .hook strong { color: var(--red); }
 .byline { font-size: 1.15rem; color: var(--muted); }
 .byline strong { color: var(--ink); }
-.lede { max-width: 46ch; font-size: 1.12rem; margin-inline: auto; }
+/* Four set lines, centered; they shrink to fit rather than re-wrap. */
+.lede { white-space: nowrap; font-size: 1.12rem; font-size: min(1.12rem, 100cqi / 20); margin-inline: auto; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 1.6em 0 1em; }
-.formats-hint { color: var(--muted); font-size: .92rem; letter-spacing: .06em; }
+.formats-hint { color: var(--muted); font-size: .92rem; letter-spacing: .06em; white-space: nowrap; font-size: min(.92rem, 100cqi / 28); }
+.br-narrow { display: none; }
+@media (max-width: 480px) { .br-narrow { display: inline; } .sep-wide { display: none; } .formats-hint { font-size: min(.92rem, 100cqi / 17.5); } }
 
 .hero-book { display: flex; justify-content: center; perspective: 1400px; order: -1; }
 @media (max-width: 879px) { .hero-book .book { width: min(56vw, 260px); } }
