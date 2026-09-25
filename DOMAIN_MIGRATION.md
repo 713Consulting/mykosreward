@@ -82,13 +82,23 @@ Google Sites only accepts domains you've proved you own in Google Search Console
 
 If it already shows as verified for this account, skip this step.
 
-## Step 4 — Connect the domain in Google Sites
+## Step 4 — Connect the domain to the Google Site
 
-1. Open your site at <https://sites.google.com>.
-2. Click the **gear (Settings)** icon → **Custom domains** → **Start setup**.
-3. Choose **Use a domain from a third-party provider**.
-4. Enter `www.mykosreward.com` → **Next** → **Done**.
-5. Click **Publish** at the top right so the site is live.
+First click **Publish** in the Sites editor so the site is live.
+
+**Signed in with a personal @gmail.com account:** click the gear icon →
+**Custom domains** → **Start setup** → **Use a domain from a third-party provider**
+→ enter `www.mykosreward.com`.
+
+**Signed in with a Google Workspace account** (mykosreward.com is managed by
+Workspace): the Sites settings have no **Custom domains** option. An admin sets
+it up instead:
+
+1. Go to <https://admin.google.com> and sign in as the Workspace admin.
+2. Open **Menu → Apps → Google Workspace → Sites**.
+3. Open **Custom URLs** (called **Web address mapping** in older versions of the
+   console) → **Add**.
+4. Choose the site, enter `www` as the address, pick `mykosreward.com`, and save.
 
 ## Step 5 — Point the domain at Google Sites
 
