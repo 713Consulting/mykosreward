@@ -1,0 +1,34 @@
+name: Publish site to GitHub Pages
+
+# Temporary home for www.mykosreward.com while the AWS account is being
+# verified for CloudFront. Publishes site/ on every change to it. Once the
+# site is on AWS, point the www record at CloudFront and delete this file.
+on:
+  push:
+    branches: [claude/mykos-reward-domain-migration-xuynx2, main]
+    paths: ["site/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
