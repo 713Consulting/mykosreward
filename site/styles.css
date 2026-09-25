@@ -182,10 +182,20 @@ em { color: var(--green); font-style: italic; }
 .inline-cta { margin-top: 2em; }
 
 .cards { display: grid; gap: 16px; margin-top: 1.6em; }
-@media (min-width: 760px) { .cards.three { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1000px) { .cards.three { grid-template-columns: repeat(3, 1fr); } }
 .card { padding: 26px 24px; border-radius: var(--radius); background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.08); border-top: 4px solid var(--accent); }
 .card h3 { color: var(--accent); }
 .card p { margin: 0; color: var(--ink); }
+/* Card text keeps its line breaks at every width: lines never re-wrap, the
+   text shrinks to fit the card instead. Each divisor is the widest line of
+   that kind, in ems, with a little room to spare. */
+.card, .fmt { container-type: inline-size; }
+.card h3, .card p, .fmt .fmt-store, .fmt .fmt-note, .fmt .btn-buy { white-space: nowrap; }
+.card h3 { font-size: min(1.35rem, 100cqi / 11.9); }
+.card p { font-size: min(1.075rem, 100cqi / 18.9); }
+.fmt .fmt-store { font-size: min(.85rem, 100cqi / 9.3); }
+.fmt .fmt-note { font-size: min(1.075rem, 100cqi / 19); }
+.fmt .btn-buy { font-size: min(1rem, 100cqi / 17.6); }
 .c-red { --accent: var(--red); }
 .c-blue { --accent: var(--blue); }
 .c-orange { --accent: var(--orange); }
@@ -200,7 +210,7 @@ em { color: var(--green); font-style: italic; }
 /* Formats */
 .formats { background: radial-gradient(ellipse at 50% 0%, rgba(184,107,255,.14), transparent 60%), var(--bg); }
 .format-grid { display: grid; gap: 18px; margin-top: 2em; }
-@media (min-width: 620px) { .format-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 700px) { .format-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 980px) { .format-grid { grid-template-columns: repeat(3, 1fr); } }
 .fmt {
   display: flex; flex-direction: column;
@@ -211,8 +221,7 @@ em { color: var(--green); font-style: italic; }
 }
 .fmt:hover { transform: translateY(-4px); box-shadow: 0 0 40px -4px var(--accent), inset 0 0 24px -12px var(--accent); }
 .fmt-store { font: 500 .85rem/1 var(--condensed); letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: .6em; }
-.fmt { container-type: inline-size; }
-.fmt h3 { font: 700 min(1.6rem, 100cqi / 11.6)/1.1 var(--display); text-transform: uppercase; letter-spacing: 0; color: var(--ink); white-space: nowrap; }
+.fmt h3 { font: 700 min(1.6rem, 100cqi / 13.3)/1.1 var(--display); text-transform: uppercase; letter-spacing: 0; color: var(--ink); white-space: nowrap; }
 .fmt-note { color: var(--muted); flex: 1; }
 .btn-buy { background: var(--accent); color: #07060b; width: 100%; }
 .btn-buy:hover { filter: brightness(1.12); transform: translateY(-1px); }
