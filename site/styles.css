@@ -87,7 +87,8 @@ em { color: var(--green); font-style: italic; }
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
 .brand { text-decoration: none; }
-.brand-title { font: 900 1.15rem/1 var(--display); color: var(--green); }
+.brand-title { font: 900 1.15rem/1 var(--display); color: var(--green); white-space: nowrap; }
+.nw { white-space: nowrap; }
 
 /* Hero */
 .hero { position: relative; padding: 48px 0 72px; overflow: hidden; }
@@ -107,7 +108,9 @@ em { color: var(--green); font-style: italic; }
 .hook { font: 500 clamp(1.25rem, 3.2vw, 1.6rem)/1.35 var(--body); color: var(--ink); max-width: 30ch; }
 .hook strong { color: var(--red); }
 .title { margin: .3em 0 .35em; }
-.t-main { display: block; font: 900 clamp(2.6rem, 8vw, 4.8rem)/1 var(--display); color: var(--green); text-shadow: 0 0 28px rgba(156,255,46,.35); }
+/* The title always stays on one line: sized to the width of its column. */
+.hero-copy { container-type: inline-size; }
+.t-main { display: block; white-space: nowrap; font: 900 min(4.8rem, calc((100vw - 32px) / 9.4))/1 var(--display); font-size: min(4.8rem, 100cqi / 9.4); color: var(--green); text-shadow: 0 0 28px rgba(156,255,46,.35); }
 .t-sub { display: block; font: 200 clamp(2.1rem, 6.4vw, 3.9rem)/1.05 var(--condensed); color: var(--red); text-transform: uppercase; letter-spacing: .04em; margin-top: .15em; text-shadow: 0 0 24px rgba(255,59,48,.35); }
 .byline { font-size: 1.15rem; color: var(--muted); }
 .byline strong { color: var(--ink); }
