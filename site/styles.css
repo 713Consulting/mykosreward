@@ -45,7 +45,7 @@ img { max-width: 100%; height: auto; display: block; }
 a { color: var(--green); }
 h1, h2, h3 { line-height: 1.15; margin: 0 0 .5em; }
 /* Cinzel Decorative joins letters like "OO" and "TH" by default; keep words readable. */
-h2, .t-main, .brand-title, .names, .fmt h3, .final-line, .dropcap::first-letter { font-variant-ligatures: none; font-feature-settings: "liga" 0, "dlig" 0, "calt" 0; font-kerning: none; }
+h2, .t-main, .names, .fmt h3, .final-line, .dropcap::first-letter { font-variant-ligatures: none; font-feature-settings: "liga" 0, "dlig" 0, "calt" 0; font-kerning: none; }
 h2, .fmt h3 { text-transform: uppercase; }
 h2 { font: 700 clamp(1.8rem, 4.5vw, 2.8rem)/1.15 var(--display); color: var(--green); letter-spacing: .01em; }
 h3 { font: 500 1.35rem/1.2 var(--condensed); letter-spacing: .04em; text-transform: uppercase; }
@@ -76,6 +76,10 @@ em { color: var(--green); font-style: italic; }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px -8px rgba(156,255,46,.85); }
 .btn-ghost { background: transparent; color: var(--ink); border-color: rgba(255,255,255,.35); }
 .btn-ghost:hover { border-color: var(--ink); }
+.topbar .btn-small { grid-column: 3; justify-self: end; white-space: nowrap; }
+@media (max-width: 480px) { .topbar .btn-small { padding: .6em .85em; font-size: .85rem; } }
+.cta-short { display: none; }
+@media (max-width: 480px) { .cta-long { display: none; } .cta-short { display: inline; } }
 .btn-small { padding: .7em 1.2em; min-height: 40px; font-size: .92rem; background: var(--green); color: #051200; }
 .btn-big { font-size: 1.15rem; padding: 1.15em 2.2em; }
 @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(156,255,46,.45), 0 10px 30px -8px rgba(156,255,46,.6); } 50% { box-shadow: 0 0 0 10px rgba(156,255,46,0), 0 10px 30px -8px rgba(156,255,46,.6); } }
@@ -83,13 +87,29 @@ em { color: var(--green); font-style: italic; }
 /* Top bar */
 .topbar {
   position: sticky; top: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px;
   padding: 10px 16px;
   background: rgba(7,6,11,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
-.brand { text-decoration: none; }
-.brand-title { font: 900 1.15rem/1 var(--display); color: var(--green); white-space: nowrap; }
+.brand { text-decoration: none; grid-column: 2; }
+/* Title lockup: "Myko's Reward" over "The Original Power", always centered,
+   each on one line, the subtitle about 90% of the title's width (as on the cover).
+   --lk is the title's font size; the subtitle is derived from it. */
+.lockup { display: block; text-align: center; margin: 0; font-weight: normal; }
+.lockup .t-main { display: block; white-space: nowrap; font: 900 var(--lk)/1 var(--display); color: var(--green); letter-spacing: 0;
+  text-shadow: -1px -1px 0 rgba(255,255,255,.45), 2px 3px 0 #000, 0 0 28px rgba(156,255,46,.3); }
+.lockup .t-sub { display: block; white-space: nowrap; font: 300 calc(var(--lk) * 1.56)/1 var(--canter); color: var(--red); letter-spacing: .03em; margin-top: .12em;
+  text-shadow: -1px -1px 0 rgba(255,255,255,.4), 2px 3px 0 #000, 0 0 24px rgba(255,59,48,.3); }
+.fit { container-type: inline-size; }
+.lockup-hero { --lk: min(4.8rem, calc((100vw - 32px) / 9.4)); --lk: min(4.8rem, 100cqi / 9.4); margin: .35em 0 .45em; }
+.lockup-final { --lk: min(3.4rem, calc((100vw - 32px) / 9.4)); --lk: min(3.4rem, 100cqi / 9.4); margin-bottom: 1.2em; }
+.lockup-footer { --lk: 1.5rem; margin-bottom: 1.4em; }
+.lockup-bar { --lk: 1.05rem; }
+.lockup-bar .t-main, .lockup-bar .t-sub { text-shadow: none; }
+.lockup-bar .t-sub { margin-top: .05em; }
+@media (max-width: 380px) { .lockup-bar { --lk: .9rem; } }
+
 .nw { white-space: nowrap; }
 
 /* Hero */
@@ -107,17 +127,13 @@ em { color: var(--green); font-style: italic; }
   display: inline-block; font: 400 1rem/1 var(--marker); color: var(--yellow);
   border: 2px solid var(--yellow); border-radius: 999px; padding: .5em 1em; transform: rotate(-3deg); margin-bottom: 1.4em;
 }
-.hook { font: 500 clamp(1.25rem, 3.2vw, 1.6rem)/1.35 var(--body); color: var(--ink); max-width: 30ch; }
+.hero-copy { text-align: center; }
+.hero-copy .cta-row { justify-content: center; }
+.hook { font: 500 clamp(1.25rem, 3.2vw, 1.6rem)/1.35 var(--body); color: var(--ink); max-width: 30ch; margin-inline: auto; }
 .hook strong { color: var(--red); }
-.title { margin: .3em 0 .35em; }
-/* The title always stays on one line: sized to the width of its column. */
-.hero-copy { container-type: inline-size; }
-.t-main { display: block; white-space: nowrap; font: 900 min(4.8rem, calc((100vw - 32px) / 9.4))/1 var(--display); font-size: min(4.8rem, 100cqi / 9.4); color: var(--green); text-shadow: 0 0 28px rgba(156,255,46,.35); }
-/* Sized to run about 90% of the title's width, like the cover. */
-.t-sub { display: block; white-space: nowrap; font: 300 min(7.5rem, calc((100vw - 32px) / 6))/1 var(--canter); font-size: min(7.5rem, 100cqi / 6); color: var(--red); letter-spacing: .03em; margin-top: .15em; text-shadow: 0 0 24px rgba(255,59,48,.35); }
 .byline { font-size: 1.15rem; color: var(--muted); }
 .byline strong { color: var(--ink); }
-.lede { max-width: 46ch; font-size: 1.12rem; }
+.lede { max-width: 46ch; font-size: 1.12rem; margin-inline: auto; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 1.6em 0 1em; }
 .formats-hint { color: var(--muted); font-size: .92rem; letter-spacing: .06em; }
 
@@ -207,8 +223,9 @@ em { color: var(--green); font-style: italic; }
 .tagline { margin-top: 2em; font: 500 .9rem/1 var(--condensed); letter-spacing: .4em; text-transform: uppercase; color: var(--muted); }
 
 /* Footer */
-.footer { padding: 40px 0; background: #040306; color: var(--muted); font-size: .95rem; }
+.footer { padding: 40px 0; background: #040306; color: var(--muted); font-size: .95rem; text-align: center; }
 .footer strong { color: var(--ink); }
 .footer-grid { display: grid; gap: 12px; }
+.footer .lockup { grid-column: 1 / -1; }
 @media (min-width: 760px) { .footer-grid { grid-template-columns: 1.3fr 1fr 1fr; align-items: start; } }
 .fine { font-size: .85rem; }
