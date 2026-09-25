@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # One-time (and safe to re-run) AWS setup for www.mykosreward.com:
 #   1. a private S3 bucket for the site files
-#   2. a CloudFront distribution in front of it (HTTPS, compression, caching)
-#   3. an HTTPS certificate for www.mykosreward.com (validated by a DNS record)
+#   2. an HTTPS certificate for www.mykosreward.com (validated by a DNS record)
+#   3. a CloudFront distribution in front of the bucket (HTTPS, compression, caching)
 #   4. once the certificate is issued, www.mykosreward.com attached to CloudFront
 # Every step checks what already exists first, so running it again only does
 # what is still missing. Needs AWS credentials in the environment.
@@ -30,7 +30,26 @@ fi
 aws s3api put-public-access-block --bucket "$BUCKET" --public-access-block-configuration \
   BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
 
-# 2a. Origin access control (lets CloudFront sign its requests to the private bucket)
+# 2. Certificate for the domain (requested first so it can be validated while CloudFront is set up)
+CERT_ARN=$(aws acm list-certificates \
+  --certificate-statuses PENDING_VALIDATION ISSUED \
+  --query "CertificateSummaryList[?DomainName=='$DOMAIN'].CertificateArn | [0]" --output text)
+if [ "$CERT_ARN" = "None" ] || [ -z "$CERT_ARN" ]; then
+  CERT_ARN=$(aws acm request-certificate --domain-name "$DOMAIN" --validation-method DNS \
+    --query CertificateArn --output text)
+  echo "Requested certificate $CERT_ARN"
+fi
+for _ in $(seq 1 20); do   # the validation record takes a few seconds to appear
+  REC=$(aws acm describe-certificate --certificate-arn "$CERT_ARN" \
+    --query "Certificate.DomainValidationOptions[0].ResourceRecord" --output json)
+  [ "$REC" != "null" ] && break
+  sleep 3
+done
+CERT_STATUS=$(aws acm describe-certificate --certificate-arn "$CERT_ARN" --query Certificate.Status --output text)
+REC_NAME=$(echo "$REC" | python3 -c 'import sys,json; print(json.load(sys.stdin)["Name"])')
+REC_VALUE=$(echo "$REC" | python3 -c 'import sys,json; print(json.load(sys.stdin)["Value"])')
+
+# 3a. Origin access control (lets CloudFront sign its requests to the private bucket)
 OAC_ID=$(aws cloudfront list-origin-access-controls \
   --query "OriginAccessControlList.Items[?Name=='$OAC_NAME'].Id | [0]" --output text)
 if [ "$OAC_ID" = "None" ] || [ -z "$OAC_ID" ]; then
@@ -40,7 +59,7 @@ if [ "$OAC_ID" = "None" ] || [ -z "$OAC_ID" ]; then
   echo "Created origin access control $OAC_ID"
 fi
 
-# 2b. Distribution
+# 3b. Distribution
 DIST_ID=$(aws cloudfront list-distributions \
   --query "DistributionList.Items[?Comment=='$TAG'].Id | [0]" --output text)
 if [ "$DIST_ID" = "None" ] || [ -z "$DIST_ID" ]; then
@@ -69,13 +88,31 @@ if [ "$DIST_ID" = "None" ] || [ -z "$DIST_ID" ]; then
   }
 }
 JSON
-  DIST_ID=$(aws cloudfront create-distribution --distribution-config file:///tmp/dist.json \
-    --query Distribution.Id --output text)
+  if ! DIST_ID=$(aws cloudfront create-distribution --distribution-config file:///tmp/dist.json \
+      --query Distribution.Id --output text 2>/tmp/cf-error); then
+    cat /tmp/cf-error
+    summary "## mykosreward.com on AWS: waiting on AWS"
+    summary ""
+    summary "S3 bucket \`$BUCKET\` is ready. The certificate is **$CERT_STATUS**."
+    summary ""
+    if grep -q "must be verified" /tmp/cf-error; then
+      summary "**CloudFront is locked until AWS verifies this account.** Open a case at https://console.aws.amazon.com/support/home#/case/create (Account and billing → Account → \"Enable CloudFront\" / account verification) and paste the error above. Run this workflow again once AWS confirms."
+    else
+      summary "Creating the CloudFront distribution failed; see the error in the log."
+    fi
+    if [ "$CERT_STATUS" != "ISSUED" ]; then
+      summary ""
+      summary "Meanwhile, add this record in Squarespace (Domains → mykosreward.com → DNS → Custom records) so the certificate is ready:"
+      summary ""
+      summary "- **CNAME**, name \`${REC_NAME%.mykosreward.com.}\`, data \`$REC_VALUE\`"
+    fi
+    exit 1
+  fi
   echo "Created CloudFront distribution $DIST_ID"
 fi
 DIST_DOMAIN=$(aws cloudfront get-distribution --id "$DIST_ID" --query Distribution.DomainName --output text)
 
-# 2c. Bucket policy: only this distribution may read the files
+# 3c. Bucket policy: only this distribution may read the files
 cat > /tmp/policy.json <<JSON
 { "Version": "2012-10-17", "Statement": [{
   "Sid": "CloudFrontRead", "Effect": "Allow",
@@ -86,25 +123,6 @@ cat > /tmp/policy.json <<JSON
 }]}
 JSON
 aws s3api put-bucket-policy --bucket "$BUCKET" --policy file:///tmp/policy.json
-
-# 3. Certificate for the domain
-CERT_ARN=$(aws acm list-certificates \
-  --certificate-statuses PENDING_VALIDATION ISSUED \
-  --query "CertificateSummaryList[?DomainName=='$DOMAIN'].CertificateArn | [0]" --output text)
-if [ "$CERT_ARN" = "None" ] || [ -z "$CERT_ARN" ]; then
-  CERT_ARN=$(aws acm request-certificate --domain-name "$DOMAIN" --validation-method DNS \
-    --query CertificateArn --output text)
-  echo "Requested certificate $CERT_ARN"
-fi
-for _ in $(seq 1 20); do   # the validation record takes a few seconds to appear
-  REC=$(aws acm describe-certificate --certificate-arn "$CERT_ARN" \
-    --query "Certificate.DomainValidationOptions[0].ResourceRecord" --output json)
-  [ "$REC" != "null" ] && break
-  sleep 3
-done
-CERT_STATUS=$(aws acm describe-certificate --certificate-arn "$CERT_ARN" --query Certificate.Status --output text)
-REC_NAME=$(echo "$REC" | python3 -c 'import sys,json; print(json.load(sys.stdin)["Name"])')
-REC_VALUE=$(echo "$REC" | python3 -c 'import sys,json; print(json.load(sys.stdin)["Value"])')
 
 # 4. Attach the domain once the certificate is issued
 ALIASES=$(aws cloudfront get-distribution-config --id "$DIST_ID" \
