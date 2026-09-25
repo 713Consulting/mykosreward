@@ -128,9 +128,26 @@ em { color: var(--green); font-style: italic; }
   filter: saturate(1.2);
 }
 .hero-grid { display: grid; gap: 40px; align-items: center; }
+/* "Available now!" as a neon sign: 70% larger than before, glowing, with a
+   sign-style flicker. The flicker never flashes more than twice a second, and
+   visitors with reduced motion on see it steadily lit. */
 .badge {
-  display: inline-block; font: 400 1rem/1 var(--marker); color: var(--yellow);
-  border: 2px solid var(--yellow); border-radius: 999px; padding: .5em 1em; transform: rotate(-3deg); margin-bottom: 1.4em;
+  display: inline-block; font: 400 1.7rem/1 var(--marker); color: #fff6c2;
+  border: 3px solid #ffe45c; border-radius: 999px; padding: .45em 1em; transform: rotate(-3deg); margin-bottom: 1.1em;
+  text-shadow: 0 0 4px #ffe45c, 0 0 12px var(--yellow), 0 0 24px var(--yellow), 0 0 44px #ff9d00;
+  box-shadow: 0 0 6px #ffe45c, 0 0 18px var(--yellow), 0 0 38px rgba(255,157,0,.7), inset 0 0 12px rgba(255,210,31,.6);
+  animation: neon 4s linear infinite;
+}
+@keyframes neon {
+  0%, 100%   { opacity: 1; }
+  /* lit ... then a sign-like stutter */
+  62%        { opacity: 1; }
+  64%        { opacity: .12; text-shadow: none; box-shadow: none; }
+  70%        { opacity: 1; }
+  73%        { opacity: .12; text-shadow: none; box-shadow: none; }
+  /* dark for a beat, then back on */
+  80%        { opacity: .12; text-shadow: none; box-shadow: none; }
+  82%        { opacity: 1; }
 }
 .hero-copy { text-align: center; }
 .hero-copy .cta-row { justify-content: center; }
