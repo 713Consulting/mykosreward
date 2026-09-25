@@ -1,6 +1,7 @@
-/* Self-hosted fonts (from @fontsource). Cinzel Decorative, Oswald, Permanent Marker: SIL OFL 1.1. Ubuntu: Ubuntu Font Licence 1.0. */
+/* Self-hosted fonts (from @fontsource). Cinzel Decorative, Oswald, Permanent Marker: SIL OFL 1.1. Ubuntu: Ubuntu Font Licence 1.0. Canter Light: (c) 2013 Christopher J. Lee, supplied by the site owner. */
 @font-face { font-family: "Cinzel Decorative"; font-style: normal; font-weight: 700; font-display: swap; src: url("fonts/cinzel-decorative-latin-700-normal.woff2") format("woff2"); }
 @font-face { font-family: "Cinzel Decorative"; font-style: normal; font-weight: 900; font-display: swap; src: url("fonts/cinzel-decorative-latin-900-normal.woff2") format("woff2"); }
+@font-face { font-family: "Canter"; font-style: normal; font-weight: 300; font-display: swap; src: url("fonts/canter-light.woff2") format("woff2"); }
 @font-face { font-family: "Oswald"; font-style: normal; font-weight: 200; font-display: swap; src: url("fonts/oswald-latin-200-normal.woff2") format("woff2"); }
 @font-face { font-family: "Oswald"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/oswald-latin-500-normal.woff2") format("woff2"); }
 @font-face { font-family: "Ubuntu"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/ubuntu-latin-400-normal.woff2") format("woff2"); }
@@ -25,6 +26,7 @@
   --maxw: 1160px;
   --display: "Cinzel Decorative", Georgia, serif;
   --condensed: "Oswald", "Arial Narrow", sans-serif;
+  --canter: "Canter", "Oswald", "Arial Narrow", sans-serif;
   --body: "Ubuntu", system-ui, -apple-system, "Segoe UI", sans-serif;
   --marker: "Permanent Marker", "Comic Sans MS", cursive;
 }
@@ -111,7 +113,8 @@ em { color: var(--green); font-style: italic; }
 /* The title always stays on one line: sized to the width of its column. */
 .hero-copy { container-type: inline-size; }
 .t-main { display: block; white-space: nowrap; font: 900 min(4.8rem, calc((100vw - 32px) / 9.4))/1 var(--display); font-size: min(4.8rem, 100cqi / 9.4); color: var(--green); text-shadow: 0 0 28px rgba(156,255,46,.35); }
-.t-sub { display: block; font: 200 clamp(2.1rem, 6.4vw, 3.9rem)/1.05 var(--condensed); color: var(--red); text-transform: uppercase; letter-spacing: .04em; margin-top: .15em; text-shadow: 0 0 24px rgba(255,59,48,.35); }
+/* Sized to run about 90% of the title's width, like the cover. */
+.t-sub { display: block; white-space: nowrap; font: 300 min(7.5rem, calc((100vw - 32px) / 6))/1 var(--canter); font-size: min(7.5rem, 100cqi / 6); color: var(--red); letter-spacing: .03em; margin-top: .15em; text-shadow: 0 0 24px rgba(255,59,48,.35); }
 .byline { font-size: 1.15rem; color: var(--muted); }
 .byline strong { color: var(--ink); }
 .lede { max-width: 46ch; font-size: 1.12rem; }
